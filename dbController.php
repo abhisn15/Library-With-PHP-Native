@@ -112,14 +112,14 @@ function tambahBuku($data)
     $penerbit = htmlspecialchars($data["penerbit"]);
     $tahun_terbit = htmlspecialchars($data["tahun_terbit"]);
     $stok_buku = htmlspecialchars($data["stok_buku"]);
-    $cover = upload(); // Menggunakan fungsi upload untuk mendapatkan penerbit file
+    $gambar = upload(); // Menggunakan fungsi upload untuk mendapatkan penerbit file
 
-    if (!$cover) {
+    if (!$gambar) {
         return false;
     }
 
-    $query = "INSERT INTO buku (judul, penerbit, tahun_terbit, stok_buku, cover) 
-              VALUES ('$judul', '$penerbit', '$tahun_terbit', '$stok_buku', '$cover')";
+    $query = "INSERT INTO buku (judul, penerbit, tahun_terbit, stok_buku, gambar) 
+              VALUES ('$judul', '$penerbit', '$tahun_terbit', '$stok_buku', '$gambar')";
 
     mysqli_query($conn, $query);
 
@@ -238,23 +238,23 @@ function ubahBuku($data)
     $id = intval($data["id"]); // Mendapatkan nilai id dari $data dan pastikan tipe datanya integer
 
     // Cek apakah user memilih gambar baru atau tidak
-    if (!empty($_FILES['cover']) && $_FILES['cover']['error'] !== 4) {
-        $cover = upload();
-        if ($cover === false) {
+    if (!empty($_FILES['gambar']) && $_FILES['gambar']['error'] !== 4) {
+        $gambar = upload();
+        if ($gambar === false) {
             // Upload gagal, handle error atau return false
             return false;
         }
     } else {
-        $cover = $gambarLama;
+        $gambar = $gambarLama;
     }
 
     // Menggunakan prepared statements untuk mencegah SQL injection
-    $stmt = $conn->prepare("UPDATE buku SET judul = ?, penerbit = ?, tahun_terbit = ?, stok_buku = ?, cover = ? WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE buku SET judul = ?, penerbit = ?, tahun_terbit = ?, stok_buku = ?, gambar = ? WHERE id = ?");
     if (!$stmt) {
         return false;
     }
     // Menggunakan tipe data yang sesuai untuk bind_param
-    $stmt->bind_param("sssssi", $judul, $penerbit, $tahun_terbit, $stok_buku, $cover, $id);
+    $stmt->bind_param("sssssi", $judul, $penerbit, $tahun_terbit, $stok_buku, $gambar, $id);
 
     $stmt->execute();
     $affected_rows = $stmt->affected_rows;

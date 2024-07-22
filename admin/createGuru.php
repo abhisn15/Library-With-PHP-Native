@@ -40,7 +40,7 @@ if (isset($_POST["submit"])) {
             <label class="form-label">NIP</label>
             <input type="number" class="form-control w-50" id="nip" aria-describedby="textHelp" name="nip" oninput="maximumInputNisn(this)" maxlength="10">
             <label class="form-label">No HP</label>
-            <input type="number" class="form-control w-50" id="hp" aria-describedby="textHelp" name="hp">
+            <input type="number" class="form-control w-50" id="hp" aria-describedby="textHelp" name="hp" maxlength="11">
             <label class="form-label">Alamat</label>
             <input type="text" class="form-control w-50" id="alamat" aria-describedby="textHelp" name="alamat">
             <br>

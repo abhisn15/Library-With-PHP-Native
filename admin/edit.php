@@ -15,14 +15,14 @@ if (isset($_POST["submit"])) {
         echo "
         <script>
         alert('Data berhasil diubah!');
-        document.location.href = 'index.php';
+        document.location.href = 'Dashboard.php';
         </script>
         ";
     } else {
         echo "
         <script>
         alert('Data gagal diubah!');
-        document.location.href = 'index.php';
+        document.location.href = 'Dashboard.php';
         </script>
         ";
     }
@@ -53,7 +53,7 @@ if (isset($_POST["submit"])) {
             <label class="form-label">Kelas</label>
             <input type="text" class="form-control w-50" name="kelas" value="<?php echo $siswa['kelas']; ?>">
             <label class="form-label">Gambar</label> <br>
-            <img src="img/<?php echo $siswa['gambar']; ?>" width="50" id="previewImg" class="mb-2"> <br>
+            <img src="../img/<?php echo $siswa['gambar']; ?>" width="50" id="previewImg" class="mb-2"> <br>
             <input type="file" class="form-control w-50" id="gambar" name="gambar" onchange="previewImage(event)">
             <input type="hidden" name="gambarLama" value="<?php echo $siswa['gambar']; ?>">
             <button type="submit" name="submit" class="btn btn-primary mt-3">Submit</button>
@@ -61,7 +61,7 @@ if (isset($_POST["submit"])) {
         </div>
     </form>
 
-    <a href="index.php" class="m-4">Kembali</a>
+    <a href="Dashboard.php" class="m-4">Kembali</a>
 
     <script>
         function previewImage(event) {

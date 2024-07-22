@@ -1,15 +1,14 @@
 <?php
-require '../dbController.php';
+require '../../dbController.php';
 
 $keyword = $_GET['keyword'];
 
-$query = "SELECT * FROM siswa
+$query = "SELECT * FROM guru
                 WHERE 
-            nama_siswa LIKE '%$keyword%' OR
-            kelas LIKE '%$keyword%' OR
-            nama_jurusan LIKE '%$keyword%' 
+            nama LIKE '%$keyword%' OR
+            nip LIKE '%$keyword%'
     ";
-$siswa = query($query);
+$guru = query($query);
 ?>
 <table border="1" cellpadding="10" cellspacing="0" class="table table-bordered">
   <tr style="text-align: center;">
@@ -17,12 +16,12 @@ $siswa = query($query);
     <th>Aksi</th>
     <th>Gambar</th>
     <th>Nama</th>
-    <th>Nisn</th>
-    <th>Kelas</th>
-    <th>Jurusan</th>
+    <th>Nip</th>
+    <th>No Hp</th>
+    <th>Alamat</th>
   </tr>
   <?php $i = $start + 1; ?>
-  <?php foreach ($siswa as $row) : ?>
+  <?php foreach ($guru as $row) : ?>
     <tr style="text-align: center;">
       <td class="center-align"><?= $i; ?></td>
       <td class="center-align">
@@ -30,10 +29,10 @@ $siswa = query($query);
         <a href="delete.php?id=<?= $row["id"]; ?>" onclick="return confirm('serius?');" style="color: red;">hapus</a>
       </td>
       <td class="center-align"><img src="../img/<?= $row["gambar"]; ?>" width="100"></td>
-      <td class="center-align"><?= $row["nama_siswa"]; ?></td>
-      <td class="center-align"><?= $row["nisn"]; ?></td>
-      <td class="center-align"><?= $row["kelas"]; ?></td>
-      <td class="center-align"><?= $row["nama_jurusan"]; ?></td>
+      <td class="center-align"><?= $row["nama"]; ?></td>
+      <td class="center-align"><?= $row["nip"]; ?></td>
+      <td class="center-align"><?= $row["hp"]; ?></td>
+      <td class="center-align"><?= $row["alamat"]; ?></td>
     </tr>
     <?php $i++; ?>
   <?php endforeach; ?>

@@ -45,16 +45,16 @@ if (isset($_POST["submit"])) {
     <div class="mb-3">
       <input type="hidden" class="form-control w-50" value="<?php echo $buku['id']; ?>" name="id">
       <label class="form-label">Judul Buku</label>
-      <input type="text" class="form-control w-50" name="nama" value="<?php echo $buku['judul']; ?>">
+      <input type="text" class="form-control w-50" name="judul" value="<?php echo $buku['judul']; ?>">
       <label class="form-label">Penerbit</label>
       <input type="text" class="form-control w-50" name="penerbit" value="<?php echo $buku['penerbit']; ?>" maxlength="10">
       <label class="form-label">Tahun Terbit</label>
-      <input type="number" class="form-control w-50" name="hp" value="<?php echo $buku['tahun_terbit']; ?>">
+      <input type="number" class="form-control w-50" name="tahun_terbit" value="<?php echo $buku['tahun_terbit']; ?>">
       <label class="form-label">Jumlah Buku</label>
-      <input type="text" class="form-control w-50" name="alamat" value="<?php echo $buku['stok_buku']; ?>">
+      <input type="number" class="form-control w-50" name="stok_buku" value="<?php echo $buku['stok_buku']; ?>">
       <label class="form-label">Cover</label> <br>
-      <img src="img/<?php echo $buku['cover']; ?>" width="50" id="previewImg" class="mb-2"> <br>
-      <input type="file" class="form-control w-50" id="cover" name="cover" onchange="previewImage(event)">
+      <img src="../img/<?php echo $buku['gambar']; ?>" width="50" id="previewImg" class="mb-2"> <br>
+      <input type="file" class="form-control w-50" id="gambar" name="gambar" onchange="previewImage(event)">
       <input type="hidden" name="gambarLama" value="<?php echo $buku['gambar']; ?>">
       <button type="submit" name="submit" class="btn btn-primary mt-3">Submit</button>
       <p style="color: red; margin-top: 10px;" id="warning"></p>

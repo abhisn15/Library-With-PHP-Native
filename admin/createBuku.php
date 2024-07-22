@@ -46,7 +46,7 @@ if (isset($_POST["submit"])) {
       <br>
       <label class="form-label">Cover</label>
       <img id="previewImg" src="#" alt="Preview Gambar" width="50" style="display: none;"> <br>
-      <input type="file" class="form-control w-50" id="cover" aria-describedby="textHelp" name="cover" onchange="previewImage(event)">
+      <input type="file" class="form-control w-50" id="gambar" aria-describedby="textHelp" name="gambar" onchange="previewImage(event)">
       <button type="submit" class="btn btn-primary mt-3" name="submit">Submit</button>
       <p style="color: red; margin-top: 10px;" id="warning"></p>
     </div>

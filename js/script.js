@@ -28,7 +28,7 @@ $(document).ready(function () {
 		// $('#container').load('ajax/siswa.php?keyword=' + $('#keyword').val());
 
 		// $.get()
-		$.get("../ajax/siswa.php?keyword=" + $("#keyword").val(), function (data) {
+		$.get("ajax/siswa.php?keyword=" + $("#keyword").val(), function (data) {
 			$("#container").html(data);
 			$(".loader").hide();
 		});
