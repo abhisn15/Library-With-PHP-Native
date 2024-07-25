@@ -14,24 +14,34 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_S
   exit;
 }
 
-if (isset($_POST["cari"])) {
+if (isset($_POST["cariListTransaksi"])) {
   $keyword = $_POST["keyword"];
   if (trim($keyword) == "") {
     // Jika keyword kosong, ambil semua data dengan pagination
-    $siswa = query("SELECT * FROM siswa LIMIT $start, $perPage");
-    $total = query("SELECT COUNT(*) AS total FROM siswa")[0]['total'];
+    $transaksi = query("SELECT transaksi.*, buku.judul AS judul_buku, buku.gambar AS cover, peminjam.username AS nama_peminjam, admin.username AS nama_admin 
+                          FROM transaksi 
+                          INNER JOIN buku ON transaksi.id_buku = buku.id 
+                          INNER JOIN users AS peminjam ON transaksi.id_peminjam = peminjam.id 
+                          INNER JOIN users AS admin ON transaksi.id_admin = admin.id 
+                          LIMIT $start, $perPage");
+    $total = query("SELECT COUNT(*) AS total FROM transaksi")[0]['total'];
   } else {
     // Jika keyword tidak kosong, cari data yang sesuai
-    $siswa = cari($keyword);
-    $total = count($siswa);
+    $transaksi = cari($keyword);
+    $total = count($transaksi);
     $page = 1; // Reset ke halaman pertama setelah pencarian
     $start = 0;
   }
 } else {
   // Query untuk mengambil data sesuai halaman
-  $siswa = query("SELECT * FROM siswa LIMIT $start, $perPage");
+  $transaksi = query("SELECT transaksi.*, buku.judul AS judul_buku, buku.gambar AS cover, peminjam.username AS nama_peminjam, admin.username AS nama_admin 
+                        FROM transaksi 
+                        INNER JOIN buku ON transaksi.id_buku = buku.id 
+                        INNER JOIN users AS peminjam ON transaksi.id_peminjam = peminjam.id 
+                        INNER JOIN users AS admin ON transaksi.id_admin = admin.id 
+                        LIMIT $start, $perPage");
   // Query untuk menghitung total data
-  $total = query("SELECT COUNT(*) AS total FROM siswa")[0]['total'];
+  $total = query("SELECT COUNT(*) AS total FROM transaksi")[0]['total'];
 }
 
 $pages = ceil($total / $perPage);
@@ -44,7 +54,7 @@ $pages = ceil($total / $perPage);
   <meta charset="UTF-8">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Halaman Dashboard | Admin</title>
+  <title>Halaman Admin | Transaksi</title>
   <style>
     /* Menyelaraskan teks di tengah secara horizontal dan vertikal */
     .center-align {
@@ -79,27 +89,23 @@ $pages = ceil($total / $perPage);
     }
   </style>
   <script src="../js/jquery.js"></script>
-  <script src="../js/script.js"></script>
+  <script src="../js/scriptTransaksi.js"></script>
 </head>
 
 <body class="m-4">
   <h3>Halo, <?= htmlspecialchars($username); ?>!</h3>
-  <h1>Daftar Siswa</h1>
+  <h1>List Transaksi</h1>
 
   <div class="row">
     <div class="col-lg-6">
-      <button type="button" class="btn btn-primary" onclick="location.href = 'create.php'" data-bs-toggle="modal" data-bs-target="#formModal">
-        Tambah siswa
-      </button>
       <a href="../logout.php" class="btn btn-danger">Logout</a> <!-- Tombol Logout -->
-      <a href="../cetak.php" class="btn btn-success" target="_blank">Cetak</a>
-      <a href="guru.php" class="btn btn-info">Guru</a>
+      <a href="../cetakTransaksi.php" class="btn btn-success" target="_blank">Cetak</a>
+      <a href="Dashboard.php" class="btn btn-info">Siswa</a>
       <a href="buku.php" class="btn btn-info">Buku</a>
-      <a href="transaksi.php" class="btn btn-info">List Transaksi</a>
+      <a href="guru.php" class="btn btn-info">Guru</a>
     </div>
   </div>
   <br><br>
-
   <form action="" method="post" class="col-lg-6">
     <div class="input-group">
       <input type="text" name="keyword" size="40" autofocus placeholder="masukkan keyword pencarian..." autocomplete="off" class="ps-2" id="keyword">
@@ -112,26 +118,26 @@ $pages = ceil($total / $perPage);
     <table border="1" cellpadding="10" cellspacing="0" class="table table-bordered">
       <tr style="text-align: center;">
         <th>No.</th>
-        <th>Aksi</th>
-        <th>Gambar</th>
-        <th>Nama</th>
-        <th>Nisn</th>
-        <th>Kelas</th>
-        <th>Jurusan</th>
+        <th>Nama Peminjam</th>
+        <th>Buku</th>
+        <th>Tanggal Peminjaman</th>
+        <th>Masa Pinjam</th>
+        <th>Tanggal Pengembalian</th>
+        <th>Pemberi</th>
       </tr>
       <?php $i = $start + 1; ?>
-      <?php foreach ($siswa as $row) : ?>
+      <?php foreach ($transaksi as $row) : ?>
         <tr style="text-align: center;">
           <td class="center-align"><?= $i; ?></td>
-          <td class="center-align">
-            <a href="edit.php?id=<?= $row["id"]; ?>">ubah</a>
-            <a href="delete.php?id=<?= $row["id"]; ?>" onclick="return confirm('serius?');" style="color: red;">hapus</a>
+          <td class="center-align"><?= $row["nama_peminjam"]; ?></td>
+          <td class="center-align d-flex flex-column justify-center align-items-center gap-3">
+            <img src="../img/<?= $row["cover"] ?>" alt="cover" width="100">
+            <?= $row["judul_buku"]; ?>
           </td>
-          <td class="center-align"><img src="../img/<?= $row["gambar"]; ?>" width="100"></td>
-          <td class="center-align"><?= $row["nama_siswa"]; ?></td>
-          <td class="center-align"><?= $row["nisn"]; ?></td>
-          <td class="center-align"><?= $row["kelas"]; ?></td>
-          <td class="center-align"><?= $row["nama_jurusan"]; ?></td>
+          <td class="center-align"><?= $row["tanggal_pinjam"]; ?></td>
+          <td class="center-align"><?= $row["f_masa_pinjam"]; ?></td>
+          <td class="center-align"><?= $row["tanggal_pengembalian"] ?? 'Belum Dikembalikan!'; ?></td>
+          <td class="center-align"><?= $row["nama_admin"]; ?></td>
         </tr>
         <?php $i++; ?>
       <?php endforeach; ?>

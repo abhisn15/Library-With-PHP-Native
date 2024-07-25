@@ -91,12 +91,11 @@ $pages = ceil($total / $perPage);
       <button type="button" class="btn btn-primary" onclick="location.href = 'createGuru.php'" data-bs-toggle="modal" data-bs-target="#formModal">
         Tambah Guru
       </button>
-      <a href="logout.php" class="btn btn-danger">Logout</a> <!-- Tombol Logout -->
+      <a href="../logout.php" class="btn btn-danger">Logout</a> <!-- Tombol Logout -->
       <a href="../cetakGuru.php" class="btn btn-success" target="_blank">Cetak</a>
       <a href="Dashboard.php" class="btn btn-info">Siswa</a>
       <a href="buku.php" class="btn btn-info">Buku</a>
-      <a href="list_peminjaman.php" class="btn btn-info">Peminjaman</a>
-      <a href="list_pengembalian.php" class="btn btn-info">Pengembalian</a>
+      <a href="transaksi.php" class="btn btn-info">List Transaksi</a>
     </div>
   </div>
   <br><br>

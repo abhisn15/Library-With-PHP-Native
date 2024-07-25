@@ -1,15 +1,43 @@
 <?php
 $conn = mysqli_connect("localhost", "root", "", "rplsmkmy_abhi_sekolah");
+$conn = mysqli_connect("localhost", "root", "", "rplsmkmy_abhi_sekolah");
 
-function query($query)
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+function query($query, $params = [])
 {
     global $conn;
-    $result = mysqli_query($conn, $query);
-    $rows = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $rows[] = $row;
+    $stmt = mysqli_prepare($conn, $query);
+    if (!$stmt) {
+        die("Query Error: " . mysqli_error($conn));
     }
-    return $rows;
+
+    if ($params) {
+        $types = str_repeat('s', count($params)); // Assuming all parameters are strings
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($result === false) {
+        die("Execute Error: " . mysqli_stmt_error($stmt));
+    }
+
+    if (stripos($query, 'SELECT') === 0) {
+        $rows = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    } else {
+        $affected_rows = mysqli_stmt_affected_rows($stmt);
+        mysqli_stmt_close($stmt);
+        return $affected_rows;
+    }
 }
 
 function upload()
@@ -119,12 +147,36 @@ function tambahBuku($data)
     }
 
     $query = "INSERT INTO buku (judul, penerbit, tahun_terbit, stok_buku, gambar) 
-              VALUES ('$judul', '$penerbit', '$tahun_terbit', '$stok_buku', '$gambar')";
+            VALUES ('$judul', '$penerbit', '$tahun_terbit', '$stok_buku', '$gambar')";
 
     mysqli_query($conn, $query);
 
     return mysqli_affected_rows($conn);
 }
+
+function pinjam($data, $admin_id)
+{
+    global $conn;
+    $id_buku = htmlspecialchars($data["id_buku"]);
+    $tanggal_pinjam = htmlspecialchars($data["tanggal_pinjam"]);
+    $id_peminjam = htmlspecialchars($data["id_peminjam"]);
+
+    // Calculate the return date
+    $masa_pinjam = date('Y-m-d', strtotime($tanggal_pinjam . ' +7 days'));
+
+    $query = "INSERT INTO transaksi (id_buku, id_peminjam, tanggal_pinjam, masa_pinjam, tanggal_pengembalian, id_admin) 
+              VALUES (?, ?, ?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('ssssss', $id_buku, $id_peminjam, $tanggal_pinjam, $masa_pinjam, $tanggal_pengembalian, $admin_id);
+
+    if ($stmt->execute()) {
+        return $stmt->affected_rows;
+    } else {
+        return -1;
+    }
+}
+
 
 function hapus($id)
 {
@@ -291,6 +343,15 @@ function cariBuku($keyword)
                 WHERE 
             judul LIKE '%$keyword%' OR
             penerbit LIKE '%$keyword%'
+    ";
+    return query($query);
+}
+
+function cariListTransaksi($keyword)
+{
+    $query = "SELECT * FROM transaksi
+                WHERE 
+            id_buku LIKE '%$keyword%'
     ";
     return query($query);
 }
