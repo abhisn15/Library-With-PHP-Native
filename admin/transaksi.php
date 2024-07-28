@@ -131,11 +131,10 @@ $pages = ceil($total / $perPage);
           <td class="center-align"><?= $i; ?></td>
           <td class="center-align"><?= $row["nama_peminjam"]; ?></td>
           <td class="center-align d-flex flex-column justify-center align-items-center gap-3">
-            <img src="../img/<?= $row["cover"] ?>" alt="cover" width="100">
             <?= $row["judul_buku"]; ?>
           </td>
           <td class="center-align"><?= $row["tanggal_pinjam"]; ?></td>
-          <td class="center-align"><?= $row["f_masa_pinjam"]; ?></td>
+          <td class="center-align"><?= $row["masa_pinjam"]; ?></td>
           <td class="center-align"><?= $row["tanggal_pengembalian"] ?? 'Belum Dikembalikan!'; ?></td>
           <td class="center-align"><?= $row["nama_admin"]; ?></td>
         </tr>

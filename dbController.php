@@ -165,7 +165,7 @@ function pinjam($data, $admin_id)
     $masa_pinjam = date('Y-m-d', strtotime($tanggal_pinjam . ' +7 days'));
 
     $query = "INSERT INTO transaksi (id_buku, id_peminjam, tanggal_pinjam, masa_pinjam, tanggal_pengembalian, id_admin) 
-              VALUES (?, ?, ?, ?, ?, ?)";
+            VALUES (?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($query);
     $stmt->bind_param('ssssss', $id_buku, $id_peminjam, $tanggal_pinjam, $masa_pinjam, $tanggal_pengembalian, $admin_id);
@@ -354,6 +354,19 @@ function cariListTransaksi($keyword)
             id_buku LIKE '%$keyword%'
     ";
     return query($query);
+}
+
+function cariHistoryPeminjaman($keyword, $id_user)
+{
+    $query = "SELECT transaksi.*, buku.judul AS judul_buku
+              FROM transaksi 
+              INNER JOIN buku ON transaksi.id_buku = buku.id
+              WHERE transaksi.id_peminjam = ? AND buku.judul LIKE ?";
+
+    // Tambahkan wildcard (%) ke keyword untuk pencarian LIKE
+    $keyword = "%$keyword%";
+
+    return query($query, [$id_user, $keyword]);
 }
 
 function input($data)

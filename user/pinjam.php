@@ -18,8 +18,10 @@ $user = query("SELECT * FROM users WHERE id = ?", [$id_user])[0];
 $id = intval($_GET["id"]);
 error_log("Book ID from URL: $id");
 
+
+$id_buku = 
 // Query data buku berdasarkan ID
-$buku = query("SELECT * FROM buku WHERE id = ?", [$id]);
+$buku = query("SELECT * FROM buku WHERE id = ?", [$id_buku]);
 
 if (empty($buku)) {
   $_SESSION['message'] = "Buku dengan ID $id tidak ditemukan!";
@@ -30,31 +32,43 @@ if (empty($buku)) {
 $buku = $buku[0];
 error_log("Book data: " . print_r($buku, true));
 
-// Mengecek stok buku
-if ($buku['stok_buku'] <= 0) {
-  $_SESSION['message'] = "Yahh, stok buku sudah habis, tunggu dilain waktu ya:)";
-  header("Location: Dashboard.php");
-  exit;
-}
-
 // Mengecek tombol submit sudah ditekan atau belum
 if (isset($_POST["submit"])) {
-  $result = pinjam($_POST, $_SESSION['id'], $id);
+  // Mengurangi stok buku
+  if ($buku['stok_buku'] <= 0) {
+    $_SESSION['message'] = "Yahh, stok buku sudah habis, tunggu dilain waktu ya:)";
+    header("Location: Dashboard.php");
+    exit;
+  }
+
+  $stok_buku = $buku['stok_buku'] - 1;
+  $query = "UPDATE buku SET stok_buku = ? WHERE id = ?";
+  $stmt = $conn->prepare($query);
+  if (!$stmt) {
+    throw new Exception("Prepare failed: " . $conn->error);
+  }
+  $stmt->bind_param('ii', $stok_buku, $id);
+
+  if (!$stmt->execute()) {
+    throw new Exception("Execute failed: " . $stmt->error);
+  }
+
+  $result = pinjam($_POST, $_SESSION['id']);
 
   if ($result > 0) {
     echo "
-            <script>
-            alert('Peminjaman sukses dikirim, segera konfirmasi kepada admin!');
-            document.location.href = 'Dashboard.php';
-            </script>
-            ";
+    <script>
+    alert('Peminjaman sukses dikirim, segera konfirmasi kepada admin!');
+    document.location.href = 'Dashboard.php';
+    </script>
+    ";
   } else {
     echo "
-            <script>
-            alert('Peminjaman gagal dikirim!!');
-            document.location.href = 'Dashboard.php';
-            </script>
-            ";
+    <script>
+    alert('Peminjaman gagal dikirim!!');
+    document.location.href = 'Dashboard.php';
+    </script>
+    ";
   }
 }
 ?>
@@ -85,7 +99,6 @@ if (isset($_POST["submit"])) {
       <button type="submit" name="submit" class="btn btn-primary mt-3">Pinjam</button>
     </div>
   </form>
-
   <a href="Dashboard.php" class="m-4">Kembali</a>
 </body>
 

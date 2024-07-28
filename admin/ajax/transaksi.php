@@ -3,7 +3,6 @@ require '../../dbController.php';
 
 $keyword = $_GET['keyword'];
 
-$query =
   $query = "SELECT transaksi.*, buku.judul AS judul_buku, buku.gambar AS cover, peminjam.username AS nama_peminjam, admin.username AS nama_admin
           FROM transaksi
           INNER JOIN buku ON transaksi.id_buku = buku.id
@@ -29,11 +28,10 @@ $transaksi = query($query);
       <td class="center-align"><?= $i; ?></td>
       <td class="center-align"><?= $row["nama_peminjam"]; ?></td>
       <td class="center-align d-flex flex-column justify-center align-items-center gap-3">
-        <img src="../img/<?= $row["cover"] ?>" alt="cover" width="100">
         <?= $row["judul_buku"]; ?>
       </td>
       <td class="center-align"><?= $row["tanggal_pinjam"]; ?></td>
-      <td class="center-align"><?= $row["f_masa_pinjam"]; ?></td>
+      <td class="center-align"><?= $row["masa_pinjam"]; ?></td>
       <td class="center-align"><?= $row["tanggal_pengembalian"] ?? 'Belum Dikembalikan!'; ?></td>
       <td class="center-align"><?= $row["nama_admin"]; ?></td>
     </tr>
