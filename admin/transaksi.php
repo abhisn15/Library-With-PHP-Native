@@ -98,6 +98,9 @@ $pages = ceil($total / $perPage);
 
   <div class="row">
     <div class="col-lg-6">
+      <button type="button" class="btn btn-primary" onclick="location.href = 'pinjam.php'" data-bs-toggle="modal" data-bs-target="#formModal">
+        Pinjam Buku
+      </button>
       <a href="../logout.php" class="btn btn-danger">Logout</a> <!-- Tombol Logout -->
       <a href="../cetakTransaksi.php" class="btn btn-success" target="_blank">Cetak</a>
       <a href="Dashboard.php" class="btn btn-info">Siswa</a>
@@ -125,6 +128,7 @@ $pages = ceil($total / $perPage);
         <th>Masa Pinjam</th>
         <th>Tanggal Pengembalian</th>
         <th>Pemberi</th>
+        <th>Aksi</th>
       </tr>
       <?php $i = $start + 1; ?>
       <?php foreach ($transaksi as $row) : ?>
@@ -138,6 +142,14 @@ $pages = ceil($total / $perPage);
           <td class="center-align"><?= $row["masa_pinjam"]; ?></td>
           <td class="center-align"><?= $row["tanggal_pengembalian"] ?? 'Belum Dikembalikan!'; ?></td>
           <td class="center-align"><?= $row["nama_admin"]; ?></td>
+          <td>
+            <?php if (is_null($row['tanggal_pengembalian'])) : ?>
+              <a href="ubahMasaPinjam.php?id=<?php echo $row['id']; ?>" class="btn btn-warning">Ubah Masa Pinjam</a>
+              <a href="transaksi.php?kembalikan=1&id=<?php echo $row['id']; ?>" class="btn btn-primary">Kembalikan</a>
+            <?php else : ?>
+              Sudah Dikembalikan
+            <?php endif; ?>
+          </td>
         </tr>
         <?php $i++; ?>
       <?php endforeach; ?>

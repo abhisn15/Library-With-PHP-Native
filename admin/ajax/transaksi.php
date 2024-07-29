@@ -3,7 +3,7 @@ require '../../dbController.php';
 
 $keyword = $_GET['keyword'];
 
-  $query = "SELECT transaksi.*, buku.judul AS judul_buku, buku.gambar AS cover, peminjam.username AS nama_peminjam, admin.username AS nama_admin
+$query = "SELECT transaksi.*, buku.judul AS judul_buku, buku.gambar AS cover, peminjam.username AS nama_peminjam, admin.username AS nama_admin
           FROM transaksi
           INNER JOIN buku ON transaksi.id_buku = buku.id
           INNER JOIN users AS peminjam ON transaksi.id_peminjam = peminjam.id
@@ -21,6 +21,7 @@ $transaksi = query($query);
     <th>Masa Pinjam</th>
     <th>Tanggal Pengembalian</th>
     <th>Pemberi</th>
+    <th>Aksi</th>
   </tr>
   <?php $i = $start + 1; ?>
   <?php foreach ($transaksi as $row) : ?>
@@ -34,6 +35,14 @@ $transaksi = query($query);
       <td class="center-align"><?= $row["masa_pinjam"]; ?></td>
       <td class="center-align"><?= $row["tanggal_pengembalian"] ?? 'Belum Dikembalikan!'; ?></td>
       <td class="center-align"><?= $row["nama_admin"]; ?></td>
+      <td>
+        <?php if (is_null($row['tanggal_pengembalian'])) : ?>
+          <a href="ubahMasaPinjam.php?id=<?php echo $row['id']; ?>" class="btn btn-warning">Ubah Masa Pinjam</a>
+          <a href="transaksi.php?kembalikan=1&id=<?php echo $row['id']; ?>" class="btn btn-primary">Kembalikan</a>
+        <?php else : ?>
+          Sudah Dikembalikan
+        <?php endif; ?>
+      </td>
     </tr>
     <?php $i++; ?>
   <?php endforeach; ?>

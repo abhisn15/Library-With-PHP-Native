@@ -11,27 +11,32 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_S
   exit;
 }
 
-$id_user = $_SESSION['id'];
-$user = query("SELECT * FROM users WHERE id = ?", [$id_user])[0];
+$id_admin = $_SESSION['id'];
+$user = query("SELECT * FROM users WHERE id = ?", [$id_admin])[0];
 
-// Ambil data di URL
-$id_buku = intval($_GET["id"]);
-error_log("Book ID from URL: $id_buku");
+// Ambil semua data buku
+$bukuList = query("SELECT * FROM buku");
 
-// Query data buku berdasarkan ID
-$buku = query("SELECT * FROM buku WHERE id = ?", [$id_buku]);
-
-if (empty($buku)) {
-  $_SESSION['message'] = "Buku dengan ID $id_buku tidak ditemukan!";
-  header("Location: Dashboard.php");
-  exit;
-}
-
-$buku = $buku[0];
-error_log("Book data: " . print_r($buku, true));
+// Ambil semua data pengguna
+$users = query("SELECT * FROM users WHERE f_role = 'Anggota'");
 
 // Mengecek tombol submit sudah ditekan atau belum
 if (isset($_POST["submit"])) {
+  $id_buku = intval($_POST["id_buku"]);
+  $id_peminjam = intval($_POST["id_peminjam"]);
+  $tanggal_pinjam = htmlspecialchars($_POST["tanggal_pinjam"]);
+
+  // Query data buku berdasarkan ID
+  $buku = query("SELECT * FROM buku WHERE id = ?", [$id_buku]);
+
+  if (empty($buku)) {
+    $_SESSION['message'] = "Buku dengan ID $id_buku tidak ditemukan!";
+    header("Location: Dashboard.php");
+    exit;
+  }
+
+  $buku = $buku[0];
+
   // Mengurangi stok buku
   if ($buku['stok_buku'] <= 0) {
     $_SESSION['message'] = "Yahh, stok buku sudah habis, tunggu di lain waktu ya :)";
@@ -51,20 +56,20 @@ if (isset($_POST["submit"])) {
     throw new Exception("Execute failed: " . $stmt->error);
   }
 
-  $result = pinjam($_POST, $_SESSION['id']);
+  $result = pinjam($_POST, $id_admin);
 
   if ($result > 0) {
     echo "
         <script>
         alert('Peminjaman sukses dikirim, segera konfirmasi kepada admin!');
-        document.location.href = 'Dashboard.php';
+        document.location.href = 'transaksi.php';
         </script>
         ";
   } else {
     echo "
         <script>
         alert('Peminjaman gagal dikirim!!');
-        document.location.href = 'Dashboard.php';
+        document.location.href = 'transaksi.php';
         </script>
         ";
   }
@@ -84,16 +89,23 @@ if (isset($_POST["submit"])) {
   <h2 class="m-4">Pinjam Buku</h2>
   <form method="POST" class="ms-3">
     <div class="mb-3">
-      <label class="form-label">Judul Buku</label>
-      <h3><?php echo htmlspecialchars($buku['judul']); ?></h3>
-      <input type="hidden" name="id_buku" value="<?php echo $buku['id']; ?>">
+      <label for="id_buku" class="form-label">ID Buku</label>
+      <select class="form-select w-50" id="id_buku" name="id_buku" required>
+        <?php foreach ($bukuList as $buku) : ?>
+          <option value="<?php echo $buku['id']; ?>"><?php echo htmlspecialchars($buku['judul']); ?></option>
+        <?php endforeach; ?>
+      </select>
 
-      <label class="form-label">Peminjam</label>
-      <h3><?php echo htmlspecialchars($user['username']); ?></h3>
-      <input type="hidden" name="id_peminjam" value="<?php echo $user['id']; ?>">
+      <label for="id_peminjam" class="form-label mt-3">Peminjam</label>
+      <select class="form-select w-50" id="id_peminjam" name="id_peminjam" required>
+        <?php foreach ($users as $user) : ?>
+          <option value="<?php echo $user['id']; ?>"><?php echo htmlspecialchars($user['username']); ?></option>
+        <?php endforeach; ?>
+      </select>
 
-      <label class="form-label">Tanggal Peminjaman</label>
-      <input type="date" class="form-control w-50" name="tanggal_pinjam" required>
+      <label for="tanggal_pinjam" class="form-label mt-3">Tanggal Peminjaman</label>
+      <input type="date" class="form-control w-50" id="tanggal_pinjam" name="tanggal_pinjam" required>
+
       <button type="submit" name="submit" class="btn btn-primary mt-3">Pinjam</button>
     </div>
   </form>
