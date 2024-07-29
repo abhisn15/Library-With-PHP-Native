@@ -2,6 +2,11 @@
     require '../dbController.php';
 
     $id = $_GET["id"];
+    if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_SESSION['Admin'])) {
+        header("Location: ../login.php");
+        exit;
+    }
+
 
     if (hapusGuru($id) > 0) {
         echo "

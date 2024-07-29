@@ -6,10 +6,11 @@ session_start();
 $username = $_SESSION['username'];
 
 // Check if the user is logged in
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_SESSION['Admin'])) {
   header("Location: ../login.php");
   exit;
 }
+
 
 // Query for Admin Teraktif
 $adminTeraktifQuery = "SELECT users.username AS nama_admin, users.f_role, COUNT(transaksi.id_admin) AS jumlah_transaksi

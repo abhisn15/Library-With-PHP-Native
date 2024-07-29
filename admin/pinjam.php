@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 require '../dbController.php';
 session_start();
 
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_SESSION['Anggota'])) {
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_SESSION['Admin'])) {
   header("Location: ../login.php");
   exit;
 }

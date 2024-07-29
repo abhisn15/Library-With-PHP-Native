@@ -1,6 +1,12 @@
 <?php
 require '../dbController.php';
 
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_SESSION['Admin'])) {
+  header("Location: ../login.php");
+  exit;
+}
+
+
 // mengecek tombol submit sudah ditekan atau belum
 if (isset($_POST["submit"])) {
   if (tambahBuku($_POST) > 0) {

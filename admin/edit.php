@@ -3,6 +3,11 @@ require '../dbController.php';
 
 // Ambil data di URL
 $id = intval($_GET["id"]);
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_SESSION['Admin'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
 
 // Query data siswa berdasarkan ID
 $siswa = query("SELECT * FROM siswa WHERE id = $id")[0];
