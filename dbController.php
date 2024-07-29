@@ -1,6 +1,5 @@
 <?php
 $conn = mysqli_connect("localhost", "root", "", "rplsmkmy_abhi_sekolah");
-$conn = mysqli_connect("localhost", "root", "", "rplsmkmy_abhi_sekolah");
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
