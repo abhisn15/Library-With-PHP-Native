@@ -60,10 +60,10 @@ $pages = ceil($total / $perPage);
             <a class="nav-link" aria-current="page" href="Dashboard.php">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="guru.php">Guru</a>
+            <a class="nav-link active" href="Guru.php">Guru</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="siswa.php">Siswa</a>
+            <a class="nav-link" href="Siswa.php">Siswa</a>
           </li>
         </ul>
         <form class="d-flex" role="search" action="" method="post">
