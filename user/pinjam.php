@@ -15,17 +15,15 @@ $id_user = $_SESSION['id'];
 $user = query("SELECT * FROM users WHERE id = ?", [$id_user])[0];
 
 // Ambil data di URL
-$id = intval($_GET["id"]);
-error_log("Book ID from URL: $id");
+$id_buku = intval($_GET["id"]);
+error_log("Book ID from URL: $id_buku");
 
-
-$id_buku = 
 // Query data buku berdasarkan ID
 $buku = query("SELECT * FROM buku WHERE id = ?", [$id_buku]);
 
 if (empty($buku)) {
-  $_SESSION['message'] = "Buku dengan ID $id tidak ditemukan!";
-  header("Location: buku.php");
+  $_SESSION['message'] = "Buku dengan ID $id_buku tidak ditemukan!";
+  header("Location: Dashboard.php");
   exit;
 }
 
@@ -36,7 +34,7 @@ error_log("Book data: " . print_r($buku, true));
 if (isset($_POST["submit"])) {
   // Mengurangi stok buku
   if ($buku['stok_buku'] <= 0) {
-    $_SESSION['message'] = "Yahh, stok buku sudah habis, tunggu dilain waktu ya:)";
+    $_SESSION['message'] = "Yahh, stok buku sudah habis, tunggu di lain waktu ya :)";
     header("Location: Dashboard.php");
     exit;
   }
@@ -47,7 +45,7 @@ if (isset($_POST["submit"])) {
   if (!$stmt) {
     throw new Exception("Prepare failed: " . $conn->error);
   }
-  $stmt->bind_param('ii', $stok_buku, $id);
+  $stmt->bind_param('ii', $stok_buku, $id_buku);
 
   if (!$stmt->execute()) {
     throw new Exception("Execute failed: " . $stmt->error);
@@ -57,18 +55,18 @@ if (isset($_POST["submit"])) {
 
   if ($result > 0) {
     echo "
-    <script>
-    alert('Peminjaman sukses dikirim, segera konfirmasi kepada admin!');
-    document.location.href = 'Dashboard.php';
-    </script>
-    ";
+        <script>
+        alert('Peminjaman sukses dikirim, segera konfirmasi kepada admin!');
+        document.location.href = 'Dashboard.php';
+        </script>
+        ";
   } else {
     echo "
-    <script>
-    alert('Peminjaman gagal dikirim!!');
-    document.location.href = 'Dashboard.php';
-    </script>
-    ";
+        <script>
+        alert('Peminjaman gagal dikirim!!');
+        document.location.href = 'Dashboard.php';
+        </script>
+        ";
   }
 }
 ?>

@@ -347,13 +347,15 @@ function cariBuku($keyword)
     return query($query);
 }
 
-function cariListTransaksi($keyword)
+function cariTransaksi($keyword, $id_user)
 {
-    $query = "SELECT * FROM transaksi
-                WHERE 
-            id_buku LIKE '%$keyword%'
-    ";
-    return query($query);
+    global $conn;
+    $keyword = "%" . $keyword . "%"; // Tambahkan wildcard untuk pencarian LIKE
+    $query = "SELECT transaksi.*, buku.judul AS judul_buku
+                FROM transaksi
+                INNER JOIN buku ON transaksi.id_buku = buku.id
+                WHERE transaksi.id_peminjam = ? AND buku.judul LIKE ?";
+    return query($query, [$id_user, $keyword]);
 }
 
 function cariHistoryPeminjaman($keyword, $id_user)

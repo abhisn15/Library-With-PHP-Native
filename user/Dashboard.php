@@ -6,7 +6,7 @@ require '../dbController.php';
 
 session_start();
 
-$perPage = 5; // Jumlah data per halaman
+$perPage = 12; // Jumlah data per halaman
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $start = ($page > 1) ? ($page * $perPage) - $perPage : 0;
 

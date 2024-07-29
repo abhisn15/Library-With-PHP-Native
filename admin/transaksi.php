@@ -103,6 +103,7 @@ $pages = ceil($total / $perPage);
       <a href="Dashboard.php" class="btn btn-info">Siswa</a>
       <a href="buku.php" class="btn btn-info">Buku</a>
       <a href="guru.php" class="btn btn-info">Guru</a>
+      <a href="laporan.php" class="btn btn-info">Laporan</a>
     </div>
   </div>
   <br><br>

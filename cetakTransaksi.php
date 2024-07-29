@@ -6,7 +6,31 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/vendor/autoload.php';
 require_once 'dbController.php';
 
-$buku = query("SELECT * FROM buku");
+if (isset($_POST["cariListTransaksi"])) {
+  $keyword = $_POST["keyword"];
+  if (trim($keyword) == "") {
+    // Jika keyword kosong, ambil semua data dengan pagination
+    $transaksi = query("SELECT transaksi.*, buku.judul AS judul_buku, buku.gambar AS cover, peminjam.username AS nama_peminjam, admin.username AS nama_admin 
+                          FROM transaksi 
+                          INNER JOIN buku ON transaksi.id_buku = buku.id 
+                          INNER JOIN users AS peminjam ON transaksi.id_peminjam = peminjam.id 
+                          INNER JOIN users AS admin ON transaksi.id_admin = admin.id ");
+    $total = query("SELECT COUNT(*) AS total FROM transaksi")[0]['total'];
+  } else {
+    // Jika keyword tidak kosong, cari data yang sesuai
+    $transaksi = cari($keyword);
+    $total = count($transaksi);
+  }
+} else {
+  // Query untuk mengambil data sesuai halaman
+  $transaksi = query("SELECT transaksi.*, buku.judul AS judul_buku, buku.gambar AS cover, peminjam.username AS nama_peminjam, admin.username AS nama_admin 
+                        FROM transaksi 
+                        INNER JOIN buku ON transaksi.id_buku = buku.id 
+                        INNER JOIN users AS peminjam ON transaksi.id_peminjam = peminjam.id 
+                        INNER JOIN users AS admin ON transaksi.id_admin = admin.id ");
+  // Query untuk menghitung total data
+  $total = query("SELECT COUNT(*) AS total FROM transaksi")[0]['total'];
+}
 
 // Specify the temporary directory
 $temporaryDir = __DIR__ . '/mpdf_tmp';
@@ -32,28 +56,30 @@ $html = '<!DOCTYPE html>
 </head>
 <body>
    <h1>Daftar Buku</h1>
-   <table border="1" cellpadding="10" cellspacing="0">
-        <tr>
-            <th>No.</th>
-            <th>Cover</th>
-            <th>Judul</th>
-            <th>Penerbit</th>
-            <th>Tahun Terbit</th>
-            <th>Jumlah Buku</th>
-        </tr>';
+  <table border="1" cellpadding="10" cellspacing="0" class="table table-bordered">
+      <tr style="text-align: center;">
+        <th>No.</th>
+        <th>Nama Peminjam</th>
+        <th>Buku</th>
+        <th>Tanggal Peminjaman</th>
+        <th>Masa Pinjam</th>
+        <th>Tanggal Pengembalian</th>
+        <th>Pemberi</th>
+      </tr>
+      ';
 
 $i = 1;
-foreach ($buku as $row) {
+foreach ($transaksi as $row) {
   $html .= '<tr>
                 <td>' . $i++ . '</td>
-                <td><img src="img/' . htmlspecialchars($row["gambar"], ENT_QUOTES, 'UTF-8') . '" width="50"></td>
-                <td>' . htmlspecialchars($row["judul"], ENT_QUOTES, 'UTF-8') . '</td>
-                <td>' . htmlspecialchars($row["penerbit"], ENT_QUOTES, 'UTF-8') . '</td>
-                <td>' . htmlspecialchars($row["tahun_terbit"], ENT_QUOTES, 'UTF-8') . '</td>
-                <td>' . htmlspecialchars($row["stok_buku"], ENT_QUOTES, 'UTF-8') . '</td>
+                <td>' . htmlspecialchars($row["nama_peminjam"], ENT_QUOTES, 'UTF-8') . '</td>
+                <td>' . htmlspecialchars($row["judul_buku"], ENT_QUOTES, 'UTF-8') . '</td>
+                <td>' . htmlspecialchars($row["tanggal_pinjam"], ENT_QUOTES, 'UTF-8') . '</td>
+                <td>' . htmlspecialchars($row["masa_pinjam"], ENT_QUOTES, 'UTF-8') . '</td>
+                <td>' . htmlspecialchars($row["tanggal_pengembalian"], ENT_QUOTES, 'UTF-8') ?? 'Belum dikembalikan!' . '</td>
+                <td>' . htmlspecialchars($row["nama_admin"], ENT_QUOTES, 'UTF-8') . '</td>
             </tr>';
 }
-
 $html .= '</table>    
 </body>
 </html>';

@@ -7,6 +7,34 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_S
   exit;
 }
 
+$perPage = 14; // Jumlah data per halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page > 1) ? ($page * $perPage) - $perPage : 0;
+
+// Ambil cookie
+$username = isset($_COOKIE['username']) ? $_COOKIE['username'] : '';
+
+if (isset($_POST["cariGuru"])) {
+  $keyword = $_POST["keyword"];
+  if (trim($keyword) == "") {
+    // Jika keyword kosong, ambil semua data dengan pagination
+    $guru = query("SELECT * FROM guru LIMIT $start, $perPage");
+    $total = query("SELECT COUNT(*) AS total FROM guru")[0]['total'];
+  } else {
+    // Jika keyword tidak kosong, cari data yang sesuai
+    $guru = cari($keyword);
+    $total = count($guru);
+    $page = 1; // Reset ke halaman pertama setelah pencarian
+    $start = 0;
+  }
+} else {
+  // Query untuk mengambil data sesuai halaman
+  $guru = query("SELECT * FROM guru LIMIT $start, $perPage");
+  // Query untuk menghitung total data
+  $total = query("SELECT COUNT(*) AS total FROM guru")[0]['total'];
+}
+
+$pages = ceil($total / $perPage);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +71,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_S
         </ul>
         <form class="d-flex" role="search" action="" method="post">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="keyword">
-          <button class="btn btn-outline-success me-2" type="submit" name="cariBuku">Search</button>
+          <button class="btn btn-outline-success me-2" type="submit" name="cariGuru">Search</button>
         </form>
         <button class="btn btn-outline-danger" onclick="location.href = '../logout.php'" type="submit">
           <span>Logout</span>
@@ -51,10 +79,47 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_S
       </div>
     </div>
   </nav>
-  <section class="d-flex flex-row align-items-center justify-content-center" style="height: 100vh;">
-    <h1 class="text-center">
-      INI HALAMAN UNTUK MENAMPILKAN GURU GURU
-    </h1>
+  <section class="d-flex flex-row align-items-center justify-content-center">
+    <div class="container mt-4">
+      <h4>Daftar Guru</h4>
+      <div class="row">
+        <?php foreach ($guru as $row) : ?>
+          <div class="col-md-3">
+            <div class="card mb-4 py-3 d-flex flex-column justify-content-between">
+              <div class="d-flex justify-content-center">
+                <img src="../img/<?= $row['gambar']; ?>" alt="<?= $row['nama'] ?>" width="200">
+              </div>
+              <div class="card-body">
+                <div class="d-flex flex-row justify-content-between">
+                  <p class="card-text"> <strong><?= $row['nama']; ?></strong></p>
+                  <p class="card-text"> <?= $row['alamat']; ?></p>
+                </div>
+                <div class="d-flex flex-row align-items-center">
+                  <div class="d-flex flex-column">
+                    <span class="card-text">NIP </span>
+                    <span class="card-text">No Hp</span>
+                  </div>
+                  <div class="d-flex flex-column mx-4">
+                    <span>: <?= $row['nip']; ?></span>
+                    <span>: <?= $row['hp']; ?></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <?php endforeach; ?>
+      </div>
+      <nav>
+        <ul class="pagination justify-content-center">
+          <?php for ($i = 1; $i <= $pages; $i++) : ?>
+            <li class="page-item <?= ($page == $i) ? 'active' : ''; ?>">
+              <a class="page-link" href="?page=<?= $i; ?>"><?= $i; ?></a>
+            </li>
+          <?php endfor; ?>
+        </ul>
+      </nav>
+    </div>
   </section>
 </body>
 

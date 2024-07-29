@@ -52,7 +52,7 @@ if (isset($_GET['kembalikan']) && isset($_GET['id'])) {
   }
 }
 
-if (isset($_POST["cariRiwayatPeminjaman"])) {
+if (isset($_POST["cariTransaksi"])) {
   $keyword = $_POST["keyword"];
   if (trim($keyword) == "") {
     // Jika keyword kosong, ambil semua data dengan pagination
@@ -61,10 +61,10 @@ if (isset($_POST["cariRiwayatPeminjaman"])) {
                             INNER JOIN buku ON transaksi.id_buku = buku.id
                             WHERE transaksi.id_peminjam = ?
                             LIMIT ?, ?", [$id_user, $start, $perPage]);
-    $total = count($transaksi);
+    $total = query("SELECT COUNT(*) AS total FROM transaksi WHERE id_peminjam = ?", [$id_user])[0]['total'];
   } else {
     // Jika keyword tidak kosong, cari data yang sesuai
-    $transaksi = cariHistoryPeminjaman($keyword, $id_user);
+    $transaksi = cariTransaksi($keyword, $id_user);
     $total = count($transaksi);
     $page = 1; // Reset ke halaman pertama setelah pencarian
     $start = 0;
@@ -81,6 +81,7 @@ if (isset($_POST["cariRiwayatPeminjaman"])) {
 }
 $pages = ceil($total / $perPage);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -116,7 +117,7 @@ $pages = ceil($total / $perPage);
         </ul>
         <form class="d-flex" role="search" action="" method="post">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="keyword">
-          <button class="btn btn-outline-success me-2" name='cari' type="submit" name="cariTransaksi">Search</button>
+          <button class="btn btn-outline-success me-2" type="submit" name="cariTransaksi">Search</button>
         </form>
         <button class="btn btn-outline-danger" onclick="location.href = '../logout.php'" type="submit">
           <span>Logout</span>
@@ -181,4 +182,5 @@ $pages = ceil($total / $perPage);
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div><?php unset($_SESSION['message']); ?> <?php endif; ?>
 </body>
+
 </html>
