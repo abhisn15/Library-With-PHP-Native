@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require '../dbController.php';
 
 $perPage = 5; // Jumlah data per halaman
@@ -12,6 +15,27 @@ session_start();
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || isset($_SESSION["Admin"])) {
   header("Location: ../login.php");
   exit;
+}
+
+// Fungsi untuk mengembalikan buku
+if (isset($_GET['kembalikan']) && isset($_GET['id'])) {
+  $id = intval($_GET['id']);
+  $tanggal_pengembalian = date('Y-m-d');
+
+  $query = "UPDATE transaksi SET tanggal_pengembalian = ? WHERE id = ?";
+  $stmt = $conn->prepare($query);
+  if (!$stmt) {
+    die("Prepare failed: " . $conn->error);
+  }
+  $stmt->bind_param('si', $tanggal_pengembalian, $id);
+
+  if ($stmt->execute()) {
+    $_SESSION['message'] = "Buku berhasil dikembalikan!";
+    header("Location: transaksi.php");
+    exit;
+  } else {
+    die("Execute failed: " . $stmt->error);
+  }
 }
 
 if (isset($_POST["cariListTransaksi"])) {
